@@ -6,11 +6,12 @@ use ratatui::{
     layout::{Constraint, Direction, Layout},
 };
 
-use crate::components;
 use crate::models;
+use crate::{components, state};
 
 pub struct App {
     pub tasks: Vec<models::task::Task>,
+    pub state: state::AppState,
 }
 
 impl App {
@@ -35,7 +36,9 @@ impl App {
         tasks.push(task_two);
         tasks.push(task_three);
 
-        return App { tasks };
+        let state = state::AppState::new();
+
+        return App { tasks, state };
     }
 
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<()> {
