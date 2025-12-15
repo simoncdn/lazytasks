@@ -10,6 +10,7 @@ use crate::models;
 use crate::{components, state};
 
 pub struct App {
+    pub exit: bool,
     pub tasks: Vec<models::task::Task>,
     pub state: state::AppState,
 }
@@ -38,16 +39,20 @@ impl App {
 
         let state = state::AppState::new();
 
-        return App { tasks, state };
+        return App {
+            exit: false,
+            tasks,
+            state,
+        };
     }
 
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<()> {
-        loop {
+        while !self.exit {
             terminal.draw(|frame| self.render(frame))?;
-            if matches!(event::read()?, Event::Key(_)) {
-                break Ok(());
-            }
+            self.handle_key_event();
         }
+
+        Ok(())
     }
 
     fn render(&mut self, frame: &mut Frame) {
@@ -58,5 +63,16 @@ impl App {
 
         components::tasks::render(frame, layout[0], self);
         components::main_view::render(frame, layout[1]);
+    }
+
+    fn handle_key_event(&mut self) {
+        if let Ok(crossterm::event::Event::Key(key)) = crossterm::event::read() {
+            match key.code {
+                crossterm::event::KeyCode::Char('q') => self.exit = true,
+                crossterm::event::KeyCode::Char('j') => {}
+                crossterm::event::KeyCode::Char('k') => {}
+                _ => {}
+            }
+        }
     }
 }

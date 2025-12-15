@@ -15,4 +15,9 @@ impl AppState {
             tasks_list_state: tasks_list_state,
         }
     }
+
+    // pub fn select_next_task(&mut self) {
+    //     let current_task = self.tasks_list_state.s
+    //
+    // }
 }
