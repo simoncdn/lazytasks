@@ -2,6 +2,7 @@ use std::io::Result;
 
 mod app;
 mod components;
+mod models;
 
 fn main() -> Result<()> {
     let mut terminal = ratatui::init();

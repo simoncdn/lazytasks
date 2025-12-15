@@ -1,15 +1,24 @@
 use ratatui::{
     Frame,
     layout::Rect,
-    widgets::{Block, BorderType, Borders},
+    widgets::{Block, BorderType, Borders, List, ListItem},
 };
 
-pub fn render(frame: &mut Frame, area: Rect) {
+use crate::app::App;
+
+pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
     let task_title = " Tasks ";
-    let tasks_view = Block::new()
-        .title(task_title)
-        .borders(Borders::ALL)
-        .border_type(BorderType::Rounded);
+    let list_items = app
+        .tasks
+        .iter()
+        .map(|task| ListItem::new(task.title.clone()));
+
+    let tasks_view = List::new(list_items).block(
+        Block::new()
+            .title(task_title)
+            .borders(Borders::ALL)
+            .border_type(BorderType::Rounded),
+    );
 
     frame.render_widget(tasks_view, area);
 }
