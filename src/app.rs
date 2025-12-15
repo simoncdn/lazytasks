@@ -69,8 +69,12 @@ impl App {
         if let Ok(crossterm::event::Event::Key(key)) = crossterm::event::read() {
             match key.code {
                 crossterm::event::KeyCode::Char('q') => self.exit = true,
-                crossterm::event::KeyCode::Char('j') => {}
-                crossterm::event::KeyCode::Char('k') => {}
+                crossterm::event::KeyCode::Char('j') => {
+                    self.state.select_next_task(self.tasks.len());
+                }
+                crossterm::event::KeyCode::Char('k') => {
+                    self.state.select_previous_task();
+                }
                 _ => {}
             }
         }
