@@ -20,18 +20,18 @@ impl App {
         let mut tasks: Vec<models::task::Task> = Vec::new();
         let task_one = models::task::Task::new(
             "0".to_string(),
-            "task-01".to_string(),
-            "Lorem ipsum dolor".to_string(),
+            "Sed ut perspiciatis unde omnis".to_string(),
+            "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.".to_string(),
         );
         let task_two = models::task::Task::new(
             "1".to_string(),
-            "task-02".to_string(),
-            "Lorem ipsum dolor".to_string(),
+            "Lorem Ipsum standard".to_string(),
+            "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system".to_string(),
         );
         let task_three = models::task::Task::new(
             "2".to_string(),
-            "task-03".to_string(),
-            "Lorem ipsum dolor".to_string(),
+            "De Finibus Bonorum et Malorum".to_string(),
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eu congue augue. Integer felis risus, sagittis sit amet pretium eu.".to_string(),
         );
         tasks.push(task_one);
         tasks.push(task_two);

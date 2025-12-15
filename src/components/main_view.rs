@@ -2,7 +2,7 @@ use ratatui::{
     Frame,
     layout::Rect,
     text::Line,
-    widgets::{Block, BorderType, Borders, Paragraph},
+    widgets::{Block, BorderType, Borders, Paragraph, Wrap},
 };
 
 use crate::app::App;
@@ -24,11 +24,13 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
         vec![Line::from("No task selected")]
     };
 
-    let main_view = Paragraph::new(text).block(
-        Block::new()
-            .title(main_title)
-            .borders(Borders::ALL)
-            .border_type(BorderType::Rounded),
-    );
+    let main_view = Paragraph::new(text)
+        .block(
+            Block::new()
+                .title(main_title)
+                .borders(Borders::ALL)
+                .border_type(BorderType::Rounded),
+        )
+        .wrap(Wrap { trim: true });
     frame.render_widget(main_view, area);
 }
