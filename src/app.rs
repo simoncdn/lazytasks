@@ -1,8 +1,8 @@
 use std::io::Result;
 
-use crossterm::event::{self, Event};
 use ratatui::{
     DefaultTerminal, Frame,
+    crossterm::{self, event::Event},
     layout::{Constraint, Direction, Layout},
 };
 
@@ -49,7 +49,8 @@ impl App {
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<()> {
         while !self.exit {
             terminal.draw(|frame| self.render(frame))?;
-            self.handle_key_event();
+            let event = ratatui::crossterm::event::read()?;
+            self.handle_key_event(&event);
         }
 
         Ok(())
@@ -63,19 +64,46 @@ impl App {
 
         components::tasks::render(frame, layout[0], self);
         components::main_view::render(frame, layout[1], self);
+
+        if self.state.show_popup {
+            components::create_task::render(frame, &self.state.input);
+        }
     }
 
-    fn handle_key_event(&mut self) {
-        if let Ok(crossterm::event::Event::Key(key)) = crossterm::event::read() {
-            match key.code {
-                crossterm::event::KeyCode::Char('q') => self.exit = true,
-                crossterm::event::KeyCode::Char('j') => {
-                    self.state.select_next_task(self.tasks.len());
+    fn handle_key_event(&mut self, event: &Event) {
+        if let crossterm::event::Event::Key(key) = event {
+            if self.state.show_popup {
+                match key.code {
+                    crossterm::event::KeyCode::Esc => {
+                        self.state.toggle_popup();
+                        self.state.reset_input()
+                    }
+                    crossterm::event::KeyCode::Enter => {
+                        let new_task = models::task::Task::new(
+                            self.tasks.len().to_string(),
+                            self.state.input.value().to_string(),
+                            "".to_string(),
+                        );
+                        self.tasks.push(new_task);
+                        self.state.toggle_popup();
+                        self.state.reset_input()
+                    }
+                    _ => {
+                        self.state.handle_event(&event);
+                    }
                 }
-                crossterm::event::KeyCode::Char('k') => {
-                    self.state.select_previous_task();
+            } else {
+                match key.code {
+                    crossterm::event::KeyCode::Char('c') => self.state.toggle_popup(),
+                    crossterm::event::KeyCode::Char('q') => self.exit = true,
+                    crossterm::event::KeyCode::Char('j') => {
+                        self.state.select_next_task(self.tasks.len());
+                    }
+                    crossterm::event::KeyCode::Char('k') => {
+                        self.state.select_previous_task();
+                    }
+                    _ => {}
                 }
-                _ => {}
             }
         }
     }
