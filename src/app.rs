@@ -19,17 +19,17 @@ impl App {
     pub fn new() -> Self {
         let mut tasks: Vec<models::task::Task> = Vec::new();
         let task_one = models::task::Task::new(
-            "0".to_string(),
+            0,
             "Sed ut perspiciatis unde omnis".to_string(),
             "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.".to_string(),
         );
         let task_two = models::task::Task::new(
-            "1".to_string(),
+            1,
             "Lorem Ipsum standard".to_string(),
             "But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system".to_string(),
         );
         let task_three = models::task::Task::new(
-            "2".to_string(),
+            2,
             "De Finibus Bonorum et Malorum".to_string(),
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec eu congue augue. Integer felis risus, sagittis sit amet pretium eu.".to_string(),
         );
@@ -80,7 +80,7 @@ impl App {
                     }
                     crossterm::event::KeyCode::Enter => {
                         let new_task = models::task::Task::new(
-                            self.tasks.len().to_string(),
+                            self.tasks.len(),
                             self.state.input.value().to_string(),
                             "".to_string(),
                         );
@@ -96,6 +96,10 @@ impl App {
                 match key.code {
                     crossterm::event::KeyCode::Char('c') => self.state.toggle_popup(),
                     crossterm::event::KeyCode::Char('q') => self.exit = true,
+                    crossterm::event::KeyCode::Char('d') => {
+                        let current_task = self.state.tasks_list_state.selected().unwrap();
+                        self.tasks.remove(current_task);
+                    }
                     crossterm::event::KeyCode::Char('j') => {
                         self.state.select_next_task(self.tasks.len());
                     }

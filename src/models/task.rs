@@ -1,12 +1,12 @@
 #[derive(Clone)]
 pub struct Task {
-    pub id: String,
+    pub id: usize,
     pub title: String,
     pub description: String,
 }
 
 impl Task {
-    pub fn new(id: String, title: String, description: String) -> Self {
+    pub fn new(id: usize, title: String, description: String) -> Self {
         return Task {
             id,
             title,

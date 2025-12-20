@@ -18,6 +18,9 @@ impl AppState {
         let mut tasks_list_state = ListState::default();
         tasks_list_state.select(Some(0));
 
+        let mut delete_task_list_state = ListState::default();
+        delete_task_list_state.select(Some(0));
+
         AppState {
             tasks_list_state: tasks_list_state,
             show_popup: false,
