@@ -8,6 +8,7 @@ use ratatui::{
 use crate::{
     components,
     keybindings::handle_key_event,
+    models::task::Task,
     state,
     storage::storage::{self, Storage},
 };
@@ -49,7 +50,7 @@ impl App {
             .constraints(vec![Constraint::Percentage(30), Constraint::Percentage(70)])
             .split(frame.area());
 
-        components::tasks::render(frame, layout[0], self);
+        components::sidebar::render(frame, layout[0], self);
         components::main_view::render(frame, layout[1], self);
 
         match &mut self.state.active_modal {
@@ -59,6 +60,12 @@ impl App {
             Some(ModalState::EditTask { task_id: _, input }) => {
                 components::edit_task::render(frame, input);
             }
+            Some(ModalState::ArchivedTask {
+                task_id: _,
+                selected_option,
+            }) => {
+                components::archived_task::render(frame, selected_option);
+            }
             Some(ModalState::DeleteTask {
                 task_id: _,
                 selected_option,
@@ -66,6 +73,23 @@ impl App {
                 components::remove_task::render(frame, selected_option);
             }
             None => {}
+        }
+    }
+
+    pub fn get_selected_tasks(&self) -> Vec<Task> {
+        match self.state.active_panel {
+            state::PanelState::ActiveTasks => self
+                .tasks
+                .iter()
+                .filter(|task| !task.archived)
+                .cloned()
+                .collect(),
+            state::PanelState::ArchivedTasks => self
+                .tasks
+                .iter()
+                .filter(|task| task.archived)
+                .cloned()
+                .collect(),
         }
     }
 }
