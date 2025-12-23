@@ -41,6 +41,38 @@ pub fn handle_key_event(app: &mut App, event: &Event) {
                     input.handle_event(&event);
                 }
             },
+            Some(ModalState::ArchivedTask {
+                index,
+                selected_option,
+            }) => match key.code {
+                crossterm::event::KeyCode::Esc => {
+                    app.state.close_modal();
+                }
+                crossterm::event::KeyCode::Enter => {
+                    let current_option_index = selected_option.selected();
+
+                    if current_option_index == Some(0) {
+                        if let Some((_, task)) = app
+                            .tasks
+                            .iter_mut()
+                            .enumerate()
+                            .find(|(task_index, _)| Some(*task_index) == Some(*index))
+                        {
+                            task.archived = true;
+                        }
+                        app.storage.save(&app.tasks);
+                    }
+
+                    app.state.close_modal();
+                }
+                crossterm::event::KeyCode::Char('j') => {
+                    selected_option.select_next();
+                }
+                crossterm::event::KeyCode::Char('k') => {
+                    selected_option.select_previous();
+                }
+                _ => {}
+            },
             Some(ModalState::DeleteTask {
                 task_id,
                 selected_option,
@@ -68,6 +100,7 @@ pub fn handle_key_event(app: &mut App, event: &Event) {
                 _ => {}
             },
             None => match key.code {
+                crossterm::event::KeyCode::Char('a') => app.state.open_archived_task(),
                 crossterm::event::KeyCode::Char('c') => app.state.open_create_task(),
                 crossterm::event::KeyCode::Char('e') => {
                     let current_task_index = app.state.tasks_list_state.selected();

@@ -8,6 +8,7 @@ pub struct Task {
     pub title: String,
     pub created_at: DateTime<Utc>,
     pub completed: bool,
+    pub archived: bool,
     pub description: String,
 }
 
@@ -19,6 +20,8 @@ impl Task {
             created_at: Utc::now(),
             completed: false,
             description: String::new(),
+            archived: false,
+            description,
         };
     }
 }

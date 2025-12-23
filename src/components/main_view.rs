@@ -5,18 +5,19 @@ use ratatui::{
     widgets::{Block, BorderType, Borders, Paragraph, Wrap},
 };
 
-use crate::app::App;
+use crate::{app::App, models::task::Task};
 
-pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
+pub fn render(frame: &mut Frame, area: Rect, app: &mut App, tasks: &[Task]) {
     let main_title = " Main View ";
 
     let text = if let Some(selected_idx) = app.state.tasks_list_state.selected() {
-        if let Some(task) = app.tasks.get(selected_idx) {
+        if let Some(task) = tasks.get(selected_idx) {
             vec![
                 Line::from(format!("ID: {}", task.id)),
                 Line::from(format!("TITLE: {}", task.title)),
                 Line::from(format!("DESCRIPTION: {}", task.description)),
                 Line::from(format!("COMPLETED: {}", task.completed)),
+                Line::from(format!("ARCHIVED: {}", task.archived)),
                 Line::from(format!("CREATED_AT: {}", task.created_at)),
             ]
         } else {

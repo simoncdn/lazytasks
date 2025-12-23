@@ -18,6 +18,10 @@ pub enum ModalState {
         task_id: Uuid,
         input: Input,
     },
+    ArchivedTask {
+        index: usize,
+        selected_option: ListState,
+    },
     DeleteTask {
         task_id: Uuid,
         selected_option: ListState,
@@ -69,7 +73,16 @@ impl AppState {
         })
     }
 
-    pub fn open_delete_task(&mut self, task_id: Uuid) {
+    pub fn open_archived_task(&mut self) {
+        let mut option_list_state = ListState::default();
+        option_list_state.select(Some(0));
+        self.active_modal = Some(ModalState::ArchivedTask {
+            index: self.tasks_list_state.selected().unwrap(),
+            selected_option: option_list_state,
+        })
+    }
+
+    pub fn open_delete_task(&mut self) {
         let mut option_list_state = ListState::default();
         option_list_state.select(Some(0));
         self.active_modal = Some(ModalState::DeleteTask {

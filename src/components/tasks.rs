@@ -6,11 +6,11 @@ use ratatui::{
     widgets::{Block, BorderType, Borders, List, ListItem},
 };
 
-use crate::app::App;
+use crate::{app::App, models::task::Task};
 
-pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
+pub fn render(frame: &mut Frame, area: Rect, app: &mut App, tasks: &[Task]) {
     let task_title = " Tasks ";
-    let list_items = app.tasks.iter().map(|task| {
+    let list_items = tasks.iter().map(|task| {
         let span = if task.completed {
             Span::styled(
                 task.title.clone(),

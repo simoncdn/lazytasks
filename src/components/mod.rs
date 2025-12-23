@@ -1,3 +1,4 @@
+pub mod archived_task;
 pub mod create_task;
 pub mod edit_task;
 pub mod main_view;
