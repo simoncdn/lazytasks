@@ -55,22 +55,22 @@ impl App {
 
         match &mut self.state.active_modal {
             Some(ModalState::CreateTask { input }) => {
-                components::create_task::render(frame, input);
+                components::modals::create_task::render(frame, input);
             }
             Some(ModalState::EditTask { task_id: _, input }) => {
-                components::edit_task::render(frame, input);
+                components::modals::edit_task::render(frame, input);
             }
             Some(ModalState::ArchivedTask {
                 task_id: _,
                 selected_option,
             }) => {
-                components::archived_task::render(frame, selected_option);
+                components::modals::archive_task::render(frame, selected_option);
             }
             Some(ModalState::DeleteTask {
                 task_id: _,
                 selected_option,
             }) => {
-                components::remove_task::render(frame, selected_option);
+                components::modals::delete_task::render(frame, selected_option);
             }
             None => {}
         }
