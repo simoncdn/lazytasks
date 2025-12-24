@@ -46,9 +46,6 @@ impl AppState {
         let mut active_tasks_state = ListState::default();
         active_tasks_state.select(Some(0));
 
-        let mut delete_task_list_state = ListState::default();
-        delete_task_list_state.select(Some(0));
-
         let mut archived_tasks_state = ListState::default();
         archived_tasks_state.select(Some(0));
 
