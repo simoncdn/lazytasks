@@ -6,11 +6,12 @@ use ratatui::{
     widgets::{Block, BorderType, Borders, List, ListItem},
 };
 
-use crate::{app::App, components::scrollbar, models::task::Task, state::PanelState};
+use crate::{app::App, components::shared, models::task::Task, state::PanelState};
 
-pub fn render(frame: &mut Frame, area: Rect, app: &mut App, tasks: &[Task]) {
-    let is_active = app.state.active_panel == PanelState::ActiveTasks;
-    let task_title = " Tasks ";
+pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
+    let tasks: Vec<&Task> = app.tasks.iter().filter(|t| t.archived).collect();
+    let is_active = app.state.active_panel == PanelState::ArchivedTasks;
+    let task_title = " Archived ";
     let list_items = tasks.iter().map(|task| {
         let span = if task.completed {
             Span::styled(
@@ -46,11 +47,11 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App, tasks: &[Task]) {
         )
         .highlight_style(highlighted_style);
 
-    frame.render_stateful_widget(tasks_view, area, &mut app.state.tasks_list_state);
-    scrollbar::render(
+    frame.render_stateful_widget(tasks_view, area, &mut app.state.archived_tasks_state);
+    shared::scrollbar::render(
         frame,
         area,
         tasks.len(),
-        app.state.tasks_list_state.offset(),
+        app.state.archived_tasks_state.offset(),
     );
 }

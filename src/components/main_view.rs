@@ -12,11 +12,11 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
     let (current_task, current_list): (Vec<&Task>, &ListState) = match app.state.active_panel {
         PanelState::ActiveTasks => (
             app.tasks.iter().filter(|t| !t.archived).collect(),
-            &app.state.tasks_list_state,
+            &app.state.active_tasks_state,
         ),
         PanelState::ArchivedTasks => (
             app.tasks.iter().filter(|t| t.archived).collect(),
-            &app.state.archived_tasks_list_state,
+            &app.state.archived_tasks_state,
         ),
     };
 

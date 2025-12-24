@@ -26,12 +26,12 @@ impl App {
         let state = state::AppState::new();
         let storage = storage::Storage::new();
 
-        return App {
+        App {
             exit: false,
             tasks: storage.load(),
             storage,
             state,
-        };
+        }
     }
 
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<()> {
@@ -55,41 +55,39 @@ impl App {
 
         match &mut self.state.active_modal {
             Some(ModalState::CreateTask { input }) => {
-                components::create_task::render(frame, input);
+                components::modals::create_task::render(frame, input);
             }
             Some(ModalState::EditTask { task_id: _, input }) => {
-                components::edit_task::render(frame, input);
+                components::modals::edit_task::render(frame, input);
             }
             Some(ModalState::ArchivedTask {
                 task_id: _,
                 selected_option,
             }) => {
-                components::archived_task::render(frame, selected_option);
+                components::modals::archive_task::render(frame, selected_option);
             }
             Some(ModalState::DeleteTask {
                 task_id: _,
                 selected_option,
             }) => {
-                components::remove_task::render(frame, selected_option);
+                components::modals::delete_task::render(frame, selected_option);
             }
             None => {}
         }
     }
 
-    pub fn get_selected_tasks(&self) -> Vec<Task> {
+    pub fn active_tasks(&self) -> Vec<&Task> {
+        self.tasks.iter().filter(|task| !task.archived).collect()
+    }
+
+    pub fn archived_tasks(&self) -> Vec<&Task> {
+        self.tasks.iter().filter(|task| task.archived).collect()
+    }
+
+    pub fn selected_tasks(&self) -> Vec<&Task> {
         match self.state.active_panel {
-            state::PanelState::ActiveTasks => self
-                .tasks
-                .iter()
-                .filter(|task| !task.archived)
-                .cloned()
-                .collect(),
-            state::PanelState::ArchivedTasks => self
-                .tasks
-                .iter()
-                .filter(|task| task.archived)
-                .cloned()
-                .collect(),
+            state::PanelState::ActiveTasks => self.active_tasks(),
+            state::PanelState::ArchivedTasks => self.archived_tasks(),
         }
     }
 }
