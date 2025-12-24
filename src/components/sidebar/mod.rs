@@ -14,6 +14,6 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
         .constraints(vec![Constraint::Percentage(70), Constraint::Percentage(30)])
         .split(area);
 
-    sidebar::active_tasks::render(frame, sidebar[0], app, &app.active_tasks());
-    sidebar::archived_tasks::render(frame, sidebar[1], app, &app.archived_tasks());
+    sidebar::active_tasks::render(frame, sidebar[0], app);
+    sidebar::archived_tasks::render(frame, sidebar[1], app);
 }

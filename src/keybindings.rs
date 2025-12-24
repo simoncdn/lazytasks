@@ -117,7 +117,7 @@ pub fn handle_key_event(app: &mut App, event: &Event) {
                 }
                 crossterm::event::KeyCode::Char('y') => {
                     if let Some(task_index) = app.state.get_selected_panel_state().selected() {
-                        let task = &app.selected_tasks()[task_index];
+                        let task = app.selected_tasks()[task_index].clone();
                         if let Some(task) = app.tasks.iter_mut().find(|t| t.id == task.id) {
                             task.completed = !task.completed;
                         }

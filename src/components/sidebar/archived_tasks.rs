@@ -8,7 +8,8 @@ use ratatui::{
 
 use crate::{app::App, components::shared, models::task::Task, state::PanelState};
 
-pub fn render(frame: &mut Frame, area: Rect, app: &mut App, tasks: &[Task]) {
+pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
+    let tasks: Vec<&Task> = app.tasks.iter().filter(|t| t.archived).collect();
     let is_active = app.state.active_panel == PanelState::ArchivedTasks;
     let task_title = " Archived ";
     let list_items = tasks.iter().map(|task| {

@@ -76,23 +76,15 @@ impl App {
         }
     }
 
-    pub fn active_tasks(&self) -> Vec<Task> {
-        self.tasks
-            .iter()
-            .filter(|task| !task.archived)
-            .cloned()
-            .collect()
+    pub fn active_tasks(&self) -> Vec<&Task> {
+        self.tasks.iter().filter(|task| !task.archived).collect()
     }
 
-    pub fn archived_tasks(&self) -> Vec<Task> {
-        self.tasks
-            .iter()
-            .filter(|task| task.archived)
-            .cloned()
-            .collect()
+    pub fn archived_tasks(&self) -> Vec<&Task> {
+        self.tasks.iter().filter(|task| task.archived).collect()
     }
 
-    pub fn selected_tasks(&self) -> Vec<Task> {
+    pub fn selected_tasks(&self) -> Vec<&Task> {
         match self.state.active_panel {
             state::PanelState::ActiveTasks => self.active_tasks(),
             state::PanelState::ArchivedTasks => self.archived_tasks(),
