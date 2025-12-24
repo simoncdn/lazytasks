@@ -46,11 +46,11 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App, tasks: &[Task]) {
         )
         .highlight_style(highlighted_style);
 
-    frame.render_stateful_widget(tasks_view, area, &mut app.state.archived_tasks_list_state);
+    frame.render_stateful_widget(tasks_view, area, &mut app.state.archived_tasks_state);
     shared::scrollbar::render(
         frame,
         area,
         tasks.len(),
-        app.state.archived_tasks_list_state.offset(),
+        app.state.archived_tasks_state.offset(),
     );
 }

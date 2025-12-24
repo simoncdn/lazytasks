@@ -22,7 +22,7 @@ pub fn handle_key_event(app: &mut App, event: &Event) {
                         app.storage.save(&app.tasks);
                     }
                     if app.tasks.len() == 1 {
-                        app.state.tasks_list_state.select_last();
+                        app.state.active_tasks_state.select_last();
                     }
                     app.state.close_modal();
                 }
