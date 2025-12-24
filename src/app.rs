@@ -26,12 +26,12 @@ impl App {
         let state = state::AppState::new();
         let storage = storage::Storage::new();
 
-        return App {
+        App {
             exit: false,
             tasks: storage.load(),
             storage,
             state,
-        };
+        }
     }
 
     pub fn run(&mut self, terminal: &mut DefaultTerminal) -> Result<()> {
@@ -76,20 +76,26 @@ impl App {
         }
     }
 
-    pub fn get_selected_tasks(&self) -> Vec<Task> {
+    pub fn active_tasks(&self) -> Vec<Task> {
+        self.tasks
+            .iter()
+            .filter(|task| !task.archived)
+            .cloned()
+            .collect()
+    }
+
+    pub fn archived_tasks(&self) -> Vec<Task> {
+        self.tasks
+            .iter()
+            .filter(|task| task.archived)
+            .cloned()
+            .collect()
+    }
+
+    pub fn selected_tasks(&self) -> Vec<Task> {
         match self.state.active_panel {
-            state::PanelState::ActiveTasks => self
-                .tasks
-                .iter()
-                .filter(|task| !task.archived)
-                .cloned()
-                .collect(),
-            state::PanelState::ArchivedTasks => self
-                .tasks
-                .iter()
-                .filter(|task| task.archived)
-                .cloned()
-                .collect(),
+            state::PanelState::ActiveTasks => self.active_tasks(),
+            state::PanelState::ArchivedTasks => self.archived_tasks(),
         }
     }
 }
