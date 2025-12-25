@@ -2,7 +2,7 @@ use ratatui::{
     Frame,
     layout::Rect,
     style::{Color, Modifier, Style},
-    text::Span,
+    text::{Line, Span},
     widgets::{Block, BorderType, Borders, List, ListItem},
 };
 
@@ -41,6 +41,14 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
         .block(
             Block::new()
                 .title(task_title)
+                .title_bottom(
+                    Line::from(format!(
+                        " {} of {} ",
+                        app.state.active_tasks_state.selected().unwrap_or(0) + 1,
+                        tasks.len()
+                    ))
+                    .right_aligned(),
+                )
                 .borders(Borders::ALL)
                 .border_type(BorderType::Rounded)
                 .border_style(border_color),
