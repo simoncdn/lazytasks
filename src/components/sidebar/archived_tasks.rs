@@ -1,9 +1,12 @@
 use ratatui::{
     Frame,
-    layout::Rect,
+    layout::{Alignment, Rect},
     style::{Color, Modifier, Style},
-    text::Span,
-    widgets::{Block, BorderType, Borders, List, ListItem},
+    text::{Line, Span},
+    widgets::{
+        Block, BorderType, Borders, List, ListItem,
+        block::{Position, Title},
+    },
 };
 
 use crate::{app::App, components::shared, models::task::Task, state::PanelState};
@@ -11,7 +14,6 @@ use crate::{app::App, components::shared, models::task::Task, state::PanelState}
 pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
     let tasks: Vec<&Task> = app.tasks.iter().filter(|t| t.archived).collect();
     let is_active = app.state.active_panel == PanelState::ArchivedTasks;
-    let task_title = " Archived ";
     let list_items = tasks.iter().map(|task| {
         let span = if task.completed {
             Span::styled(
@@ -37,10 +39,19 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
         Color::Green
     };
 
+    let current_task_count = if tasks.len() > 0 {
+        app.state.archived_tasks_state.selected().unwrap_or(0) + 1
+    } else {
+        0
+    };
     let tasks_view = List::new(list_items)
         .block(
             Block::new()
-                .title(task_title)
+                .title(" Archived ")
+                .title_bottom(
+                    Line::from(format!(" {} of {} ", current_task_count, tasks.len()))
+                        .right_aligned(),
+                )
                 .borders(Borders::ALL)
                 .border_type(BorderType::Rounded)
                 .border_style(border_color),
