@@ -54,6 +54,7 @@ pub fn handle_key_event(app: &mut App, event: &Event) {
             Some(ModalState::ArchivedTask {
                 task_id,
                 selected_option,
+                is_archived: _,
             }) => match key.code {
                 crossterm::event::KeyCode::Esc => {
                     app.state.close_modal();
@@ -63,7 +64,7 @@ pub fn handle_key_event(app: &mut App, event: &Event) {
 
                     if current_option_index == Some(0) {
                         if let Some(task) = app.tasks.iter_mut().find(|task| task.id == *task_id) {
-                            task.archived = true;
+                            task.archived = !task.archived;
                             task.updated_at = Some(Utc::now());
                         }
                         app.storage.save(&app.tasks);
@@ -110,7 +111,7 @@ pub fn handle_key_event(app: &mut App, event: &Event) {
                 crossterm::event::KeyCode::Char('a') => {
                     if let Some(task_index) = app.state.get_selected_panel_state().selected() {
                         let task = &app.selected_tasks()[task_index];
-                        app.state.open_archived_task(task.id)
+                        app.state.open_archived_task(task.id, task.archived)
                     }
                 }
                 crossterm::event::KeyCode::Char('c') => app.state.open_create_task(),

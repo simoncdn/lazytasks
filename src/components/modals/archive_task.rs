@@ -6,11 +6,12 @@ use ratatui::{
 
 use crate::components::shared;
 
-pub fn render(frame: &mut Frame, selected_option: &mut ListState) {
-    let area = shared::modal::Modal::new("Archived confirmation")
+pub fn render(frame: &mut Frame, selected_option: &mut ListState, is_archived: bool) {
+    let action_name = if is_archived { "Unarchive" } else { "Archive" };
+    let area = shared::modal::Modal::new(format!("{} confirmation", action_name))
         .height(4)
         .render(frame);
-    let list_items: Vec<ListItem> = vec![ListItem::from("Archived"), ListItem::from("Cancel")];
+    let list_items: Vec<ListItem> = vec![ListItem::from(action_name), ListItem::from("Cancel")];
     let delete_options = List::new(list_items).highlight_style(
         Style::default()
             .bg(Color::Blue)

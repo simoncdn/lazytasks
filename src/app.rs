@@ -63,8 +63,9 @@ impl App {
             Some(ModalState::ArchivedTask {
                 task_id: _,
                 selected_option,
+                is_archived,
             }) => {
-                components::modals::archive_task::render(frame, selected_option);
+                components::modals::archive_task::render(frame, selected_option, *is_archived);
             }
             Some(ModalState::DeleteTask {
                 task_id: _,
