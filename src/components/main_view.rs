@@ -33,7 +33,7 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
                     "Updated_at: {}",
                     match task.updated_at {
                         Some(value) => value.to_string(),
-                        None => "Undefined".to_string(),
+                        None => "Not updated".to_string(),
                     }
                 )),
             ]
