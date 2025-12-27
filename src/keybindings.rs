@@ -68,7 +68,7 @@ pub fn handle_key_event(app: &mut App, event: &Event) {
                             task.updated_at = Some(Utc::now());
                         }
                         app.storage.save(&app.tasks);
-                        app.state.archived_tasks_state.select(Some(0));
+                        app.state.archived_tasks_state.select_previous();
                     }
 
                     app.state.close_modal();
@@ -93,6 +93,7 @@ pub fn handle_key_event(app: &mut App, event: &Event) {
 
                     if current_option_index == Some(0) {
                         app.tasks.retain(|t| t.id != *task_id);
+                        app.state.get_selected_panel_state().select_previous();
                         app.storage.save(&app.tasks);
                         app.state.close_modal();
                     } else {
