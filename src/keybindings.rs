@@ -1,6 +1,7 @@
 use chrono::Utc;
 use ratatui::crossterm::{self, event::Event};
 use tui_input::backend::crossterm::EventHandler;
+use uuid::Uuid;
 
 use crate::{
     app::App,
@@ -52,7 +53,7 @@ pub fn handle_key_event(app: &mut App, event: &Event) {
                 }
             },
             Some(ModalState::ArchivedTask {
-                task_id,
+                task_ids,
                 selected_option,
                 is_archived: _,
             }) => match key.code {
@@ -63,12 +64,23 @@ pub fn handle_key_event(app: &mut App, event: &Event) {
                     let current_option_index = selected_option.selected();
 
                     if current_option_index == Some(0) {
-                        if let Some(task) = app.tasks.iter_mut().find(|task| task.id == *task_id) {
-                            task.archived = !task.archived;
-                            task.updated_at = Some(Utc::now());
-                        }
+                        app.tasks.iter_mut().for_each(|task| {
+                            if task_ids.contains(&task.id) {
+                                task.archived = !task.archived;
+                                task.updated_at = Some(Utc::now());
+                            }
+                        });
                         app.storage.save(&app.tasks);
-                        app.state.archived_tasks_state.select_previous();
+                        app.selected_tasks.clear();
+
+                        let count = app.get_current_tasks().len();
+                        if let Some(idx) = app.state.get_selected_panel_state().selected() {
+                            if idx >= count {
+                                app.state
+                                    .get_selected_panel_state()
+                                    .select(count.saturating_sub(1).into());
+                            }
+                        }
                     }
 
                     app.state.close_modal();
@@ -82,7 +94,7 @@ pub fn handle_key_event(app: &mut App, event: &Event) {
                 _ => {}
             },
             Some(ModalState::DeleteTask {
-                task_id,
+                task_ids,
                 selected_option,
             }) => match key.code {
                 crossterm::event::KeyCode::Esc => {
@@ -92,13 +104,20 @@ pub fn handle_key_event(app: &mut App, event: &Event) {
                     let current_option_index = selected_option.selected();
 
                     if current_option_index == Some(0) {
-                        app.tasks.retain(|t| t.id != *task_id);
-                        app.state.get_selected_panel_state().select_previous();
+                        app.tasks.retain(|t| !task_ids.contains(&t.id));
+                        app.selected_tasks.clear();
                         app.storage.save(&app.tasks);
-                        app.state.close_modal();
-                    } else {
-                        app.state.close_modal();
+
+                        let count = app.get_current_tasks().len();
+                        if let Some(idx) = app.state.get_selected_panel_state().selected() {
+                            if idx >= count {
+                                app.state
+                                    .get_selected_panel_state()
+                                    .select(count.saturating_sub(1).into());
+                            }
+                        }
                     }
+                    app.state.close_modal();
                 }
                 crossterm::event::KeyCode::Char('j') => {
                     selected_option.select_next();
@@ -110,9 +129,16 @@ pub fn handle_key_event(app: &mut App, event: &Event) {
             },
             None => match key.code {
                 crossterm::event::KeyCode::Char('a') => {
-                    if let Some(task_index) = app.state.get_selected_panel_state().selected() {
-                        let task = &app.selected_tasks()[task_index];
-                        app.state.open_archived_task(task.id, task.archived)
+                    let is_archived = app.state.active_panel == PanelState::ArchivedTasks;
+
+                    if app.selected_tasks.is_empty() {
+                        if let Some(task_index) = app.state.get_selected_panel_state().selected() {
+                            let task_id = app.get_current_tasks()[task_index].id;
+                            app.state.open_archived_task(vec![task_id], is_archived)
+                        }
+                    } else {
+                        app.state
+                            .open_archived_task(app.selected_tasks.clone(), is_archived);
                     }
                 }
                 crossterm::event::KeyCode::Char('c') => {
@@ -124,25 +150,39 @@ pub fn handle_key_event(app: &mut App, event: &Event) {
                     if let Some(task_index) = app.state.get_selected_panel_state().selected()
                         && app.state.active_panel == PanelState::ActiveTasks
                     {
-                        let task = &app.selected_tasks()[task_index];
+                        let task = &app.get_current_tasks()[task_index];
                         app.state.open_edit_task(task.id, task.title.clone());
                     }
                 }
                 crossterm::event::KeyCode::Char('y') => {
-                    if let Some(task_index) = app.state.get_selected_panel_state().selected() {
-                        let task = app.selected_tasks()[task_index].clone();
-                        if let Some(task) = app.tasks.iter_mut().find(|t| t.id == task.id) {
-                            task.completed = !task.completed;
-                            task.updated_at = Some(Utc::now());
+                    if app.selected_tasks.is_empty() {
+                        if let Some(task_index) = app.state.get_selected_panel_state().selected() {
+                            let task = app.get_current_tasks()[task_index].clone();
+                            if let Some(task) = app.tasks.iter_mut().find(|t| t.id == task.id) {
+                                task.completed = !task.completed;
+                                task.updated_at = Some(Utc::now());
+                            }
                         }
+                    } else {
+                        app.tasks.iter_mut().for_each(|t| {
+                            if app.selected_tasks.contains(&t.id) {
+                                t.completed = !t.completed;
+                                t.updated_at = Some(Utc::now());
+                            }
+                        });
+                        app.selected_tasks.clear();
                     }
                     app.storage.save(&app.tasks);
                 }
                 crossterm::event::KeyCode::Char('q') => app.exit = true,
                 crossterm::event::KeyCode::Char('d') => {
-                    if let Some(task_index) = app.state.get_selected_panel_state().selected() {
-                        let task = &app.selected_tasks()[task_index];
-                        app.state.open_delete_task(task.id);
+                    if app.selected_tasks.is_empty() {
+                        if let Some(task_index) = app.state.get_selected_panel_state().selected() {
+                            let task_id = app.get_current_tasks()[task_index].id;
+                            app.state.open_delete_task(vec![task_id]);
+                        }
+                    } else {
+                        app.state.open_delete_task(app.selected_tasks.clone());
                     }
                 }
                 crossterm::event::KeyCode::Char('j') => match app.state.active_panel {
@@ -159,7 +199,18 @@ pub fn handle_key_event(app: &mut App, event: &Event) {
                         app.state.select_previous_task(app.archived_tasks().len())
                     }
                 },
+                crossterm::event::KeyCode::Char(' ') => {
+                    if let Some(task_index) = app.state.get_selected_panel_state().selected() {
+                        let task_id = app.get_current_tasks()[task_index].id;
+                        if app.selected_tasks.contains(&task_id) {
+                            app.selected_tasks.retain(|id| *id != task_id);
+                        } else {
+                            app.selected_tasks.push(task_id);
+                        }
+                    }
+                }
                 crossterm::event::KeyCode::Tab => {
+                    app.selected_tasks.clear();
                     app.state.toggle_active_panel();
                 }
                 _ => {}

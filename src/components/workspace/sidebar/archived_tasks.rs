@@ -10,30 +10,45 @@ use crate::{app::App, components::shared, models::task::Task, state::PanelState}
 
 pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
     let tasks: Vec<&Task> = app.tasks.iter().filter(|t| t.archived).collect();
-    let is_active = app.state.active_panel == PanelState::ArchivedTasks;
-    let list_items = tasks.iter().map(|task| {
-        let span = if task.completed {
-            Span::styled(
-                task.title.clone(),
-                Style::default().add_modifier(Modifier::CROSSED_OUT),
-            )
-        } else {
-            Span::raw(task.title.clone())
-        };
-        ListItem::new(span)
-    });
-    let highlighted_style = if app.state.active_modal.is_some() || !is_active {
-        Style::default()
-    } else {
-        Style::default()
-            .bg(Color::Blue)
-            .fg(Color::White)
-            .add_modifier(Modifier::BOLD)
-    };
-    let border_color = if app.state.active_modal.is_some() || !is_active {
-        Color::White
-    } else {
+    let is_active =
+        app.state.active_modal.is_none() && app.state.active_panel == PanelState::ArchivedTasks;
+    let selected_index = app.state.archived_tasks_state.selected();
+
+    let list_items: Vec<ListItem> = tasks
+        .iter()
+        .enumerate()
+        .map(|(index, task)| {
+            let is_cursor = selected_index == Some(index) && is_active;
+            let is_selected = app.selected_tasks.contains(&task.id);
+
+            let mut text_style = Style::default();
+
+            if task.completed {
+                text_style = text_style.add_modifier(Modifier::CROSSED_OUT);
+            }
+
+            if is_selected {
+                text_style = text_style.fg(Color::LightGreen)
+            } else if is_cursor {
+                text_style = text_style.fg(Color::White).add_modifier(Modifier::BOLD);
+            }
+
+            let item_style = if is_cursor {
+                Style::default()
+                    .bg(Color::Blue)
+                    .add_modifier(Modifier::BOLD)
+            } else {
+                Style::default()
+            };
+
+            ListItem::new(Span::styled(&task.title, text_style)).style(item_style)
+        })
+        .collect();
+
+    let border_color = if is_active {
         Color::Green
+    } else {
+        Color::White
     };
 
     let current_task_count = if tasks.len() > 0 {
@@ -41,19 +56,16 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
     } else {
         0
     };
-    let tasks_view = List::new(list_items)
-        .block(
-            Block::new()
-                .title(" Archived ")
-                .title_bottom(
-                    Line::from(format!(" {} of {} ", current_task_count, tasks.len()))
-                        .right_aligned(),
-                )
-                .borders(Borders::ALL)
-                .border_type(BorderType::Rounded)
-                .border_style(border_color),
-        )
-        .highlight_style(highlighted_style);
+    let tasks_view = List::new(list_items).block(
+        Block::new()
+            .title(" Archived ")
+            .title_bottom(
+                Line::from(format!(" {} of {} ", current_task_count, tasks.len())).right_aligned(),
+            )
+            .borders(Borders::ALL)
+            .border_type(BorderType::Rounded)
+            .border_style(border_color),
+    );
 
     frame.render_stateful_widget(tasks_view, area, &mut app.state.archived_tasks_state);
     shared::scrollbar::render(
