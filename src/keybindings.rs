@@ -1,7 +1,6 @@
 use chrono::Utc;
 use ratatui::crossterm::{self, event::Event};
 use tui_input::backend::crossterm::EventHandler;
-use uuid::Uuid;
 
 use crate::{
     app::App,
