@@ -28,7 +28,7 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
             }
 
             if is_selected {
-                text_style = text_style.fg(Color::LightGreen)
+                text_style = text_style.fg(Color::LightGreen);
             } else if is_cursor {
                 text_style = text_style.fg(Color::White).add_modifier(Modifier::BOLD);
             }
