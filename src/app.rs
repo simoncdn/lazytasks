@@ -4,6 +4,7 @@ use ratatui::{
     DefaultTerminal, Frame,
     layout::{Constraint, Direction, Layout},
 };
+use uuid::Uuid;
 
 use crate::{
     components,
@@ -17,6 +18,7 @@ use crate::{models, state::ModalState};
 pub struct App {
     pub exit: bool,
     pub tasks: Vec<models::task::Task>,
+    pub selected_tasks: Vec<Uuid>,
     pub state: state::AppState,
     pub storage: Storage,
 }
@@ -29,6 +31,7 @@ impl App {
         App {
             exit: false,
             tasks: storage.load(),
+            selected_tasks: Vec::new(),
             storage,
             state,
         }
@@ -61,14 +64,14 @@ impl App {
                 components::modals::edit_task::render(frame, input);
             }
             Some(ModalState::ArchivedTask {
-                task_id: _,
+                task_ids: _,
                 selected_option,
                 is_archived,
             }) => {
                 components::modals::archive_task::render(frame, selected_option, *is_archived);
             }
             Some(ModalState::DeleteTask {
-                task_id: _,
+                task_ids: _,
                 selected_option,
             }) => {
                 components::modals::delete_task::render(frame, selected_option);
@@ -85,7 +88,7 @@ impl App {
         self.tasks.iter().filter(|task| task.archived).collect()
     }
 
-    pub fn selected_tasks(&self) -> Vec<&Task> {
+    pub fn get_current_tasks(&self) -> Vec<&Task> {
         match self.state.active_panel {
             state::PanelState::ActiveTasks => self.active_tasks(),
             state::PanelState::ArchivedTasks => self.archived_tasks(),
