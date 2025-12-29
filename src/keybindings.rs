@@ -77,7 +77,7 @@ pub fn handle_key_event(app: &mut App, event: &Event) {
                             if idx >= count {
                                 app.state
                                     .get_selected_panel_state()
-                                    .select(count.saturating_sub(1).into());
+                                    .select(count.checked_sub(1));
                             }
                         }
                     }
@@ -112,7 +112,7 @@ pub fn handle_key_event(app: &mut App, event: &Event) {
                             if idx >= count {
                                 app.state
                                     .get_selected_panel_state()
-                                    .select(count.saturating_sub(1).into());
+                                    .select(count.checked_sub(1));
                             }
                         }
                     }
