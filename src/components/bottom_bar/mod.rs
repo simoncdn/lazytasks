@@ -9,11 +9,11 @@ use ratatui::{
 use crate::{app::App, components::bottom_bar};
 
 pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
-    let bottom_bar = Layout::default()
+    let bottom_bar_layout = Layout::default()
         .direction(Direction::Horizontal)
-        .constraints(vec![Constraint::Percentage(90), Constraint::Percentage(10)])
+        .constraints([Constraint::Percentage(90), Constraint::Percentage(10)])
         .split(area);
 
-    bottom_bar::key_hints::render(frame, bottom_bar[0], app);
-    bottom_bar::app_info::render(frame, bottom_bar[1]);
+    bottom_bar::key_hints::render(frame, bottom_bar_layout[0], app);
+    bottom_bar::app_info::render(frame, bottom_bar_layout[1]);
 }
