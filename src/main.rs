@@ -1,5 +1,6 @@
 use std::io::Result;
 
+mod actions;
 mod app;
 mod components;
 mod editor;

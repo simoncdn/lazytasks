@@ -1,0 +1,30 @@
+use chrono::Utc;
+use ratatui::DefaultTerminal;
+
+use crate::{app::App, editor, state::PanelState};
+
+pub fn edit_task(app: &mut App, terminal: &mut DefaultTerminal) {
+    if app.state.active_panel == PanelState::ActiveTasks {
+        let task_id = app
+            .state
+            .get_selected_panel_state()
+            .selected()
+            .and_then(|idx| app.get_current_tasks().get(idx).map(|t| t.id));
+
+        if let Some(task_id) = task_id {
+            if let Some(task_ref) = app.tasks.iter().find(|t| t.id == task_id) {
+                let update = editor::open_in_editor(task_ref, terminal);
+
+                // Only apply changes if title is not empty
+                if !update.title.is_empty() {
+                    if let Some(task) = app.tasks.iter_mut().find(|t| t.id == task_id) {
+                        task.title = update.title;
+                        task.description = update.description;
+                        task.updated_at = Some(Utc::now());
+                    }
+                    app.storage.save(&app.tasks);
+                }
+            }
+        }
+    }
+}
