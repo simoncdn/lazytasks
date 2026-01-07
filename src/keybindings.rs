@@ -20,7 +20,7 @@ pub fn handle_key_event(app: &mut App, event: &Event, terminal: &mut DefaultTerm
                     actions::close_modal(app);
                 }
                 _ => {
-                    input.handle_event(&event);
+                    input.handle_event(event);
                 }
             },
             Some(ModalState::EditTask { task_id, input }) => match key.code {
@@ -33,7 +33,7 @@ pub fn handle_key_event(app: &mut App, event: &Event, terminal: &mut DefaultTerm
                     actions::close_modal(app);
                 }
                 _ => {
-                    input.handle_event(&event);
+                    input.handle_event(event);
                 }
             },
             Some(ModalState::ArchivedTask {
