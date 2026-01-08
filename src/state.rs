@@ -21,6 +21,7 @@ pub struct AppState {
 pub enum PanelState {
     ActiveTasks,
     ArchivedTasks,
+    About,
 }
 
 pub enum ModalState {
@@ -61,30 +62,34 @@ impl AppState {
     pub fn toggle_active_panel(&mut self) {
         if self.active_panel == PanelState::ActiveTasks {
             self.active_panel = PanelState::ArchivedTasks
-        } else {
+        } else if self.active_panel == PanelState::ArchivedTasks {
+            self.active_panel = PanelState::About
+        } else if self.active_panel == PanelState::About {
             self.active_panel = PanelState::ActiveTasks
         }
     }
 
     pub fn select_next_task(&mut self, tasks_count: usize) {
-        let current_pannel_state = self.get_selected_panel_state();
-        let current_task = current_pannel_state.selected();
+        if let Some(current_pannel_state) = self.get_selected_panel_state() {
+            let current_task = current_pannel_state.selected();
 
-        if current_task < Some(tasks_count - 1) {
-            current_pannel_state.select_next();
-        } else {
-            current_pannel_state.select_first();
+            if current_task < Some(tasks_count - 1) {
+                current_pannel_state.select_next();
+            } else {
+                current_pannel_state.select_first();
+            }
         }
     }
 
     pub fn select_previous_task(&mut self, tasks_count: usize) {
-        let current_pannel_state = self.get_selected_panel_state();
-        let current_task = current_pannel_state.selected();
+        if let Some(current_pannel_state) = self.get_selected_panel_state() {
+            let current_task = current_pannel_state.selected();
 
-        if current_task > Some(0) {
-            current_pannel_state.select_previous();
-        } else {
-            current_pannel_state.select(Some(tasks_count - 1));
+            if current_task > Some(0) {
+                current_pannel_state.select_previous();
+            } else {
+                current_pannel_state.select(Some(tasks_count - 1));
+            }
         }
     }
 
@@ -120,10 +125,11 @@ impl AppState {
         })
     }
 
-    pub fn get_selected_panel_state(&mut self) -> &mut ListState {
+    pub fn get_selected_panel_state(&mut self) -> Option<&mut ListState> {
         match self.active_panel {
-            PanelState::ActiveTasks => &mut self.active_tasks_state,
-            PanelState::ArchivedTasks => &mut self.archived_tasks_state,
+            PanelState::ActiveTasks => Some(&mut self.active_tasks_state),
+            PanelState::ArchivedTasks => Some(&mut self.archived_tasks_state),
+            PanelState::About => None,
         }
     }
 

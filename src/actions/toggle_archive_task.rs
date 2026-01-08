@@ -15,11 +15,11 @@ pub fn toggle_archive_task(app: &mut App, option_idx: Option<usize>, task_ids: V
         app.selected_tasks.clear();
 
         let count = app.get_current_tasks().len();
-        if let Some(idx) = app.state.get_selected_panel_state().selected() {
+        if let Some(idx) = app.state.get_selected_panel_state().and_then(|s| s.selected()) {
             if idx >= count {
-                app.state
-                    .get_selected_panel_state()
-                    .select(count.checked_sub(1));
+                if let Some(panel_state) = app.state.get_selected_panel_state() {
+                    panel_state.select(count.checked_sub(1));
+                }
             }
         }
     }

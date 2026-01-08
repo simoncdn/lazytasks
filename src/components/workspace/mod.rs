@@ -1,4 +1,4 @@
-pub mod main_view;
+pub mod context_view;
 pub mod sidebar;
 
 use ratatui::{
@@ -15,5 +15,5 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
         .split(area);
 
     workspace::sidebar::render(frame, workspace[0], app);
-    workspace::main_view::render(frame, workspace[1], app);
+    workspace::context_view::render(frame, workspace[1], app);
 }

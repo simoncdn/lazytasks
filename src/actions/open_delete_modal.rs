@@ -2,7 +2,7 @@ use crate::app::App;
 
 pub fn open_delete_modal(app: &mut App) {
     if app.selected_tasks.is_empty() {
-        if let Some(task_index) = app.state.get_selected_panel_state().selected() {
+        if let Some(task_index) = app.state.get_selected_panel_state().and_then(|s| s.selected()) {
             let task_id = app.get_current_tasks()[task_index].id;
             app.state.open_delete_task(vec![task_id]);
         }
