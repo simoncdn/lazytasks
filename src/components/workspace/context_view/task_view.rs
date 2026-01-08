@@ -7,25 +7,19 @@ use ratatui::{
     widgets::{Block, BorderType, Borders, ListState, Paragraph, Wrap},
 };
 
-use crate::{app::App, models::task::Task, state::PanelState};
+use crate::models::task::Task;
 
-pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
-    let main_title = " Main View ";
-    let (current_task, current_list): (Vec<&Task>, &ListState) = match app.state.active_panel {
-        PanelState::ActiveTasks => (
-            app.tasks.iter().filter(|t| !t.archived).collect(),
-            &app.state.active_tasks_state,
-        ),
-        PanelState::ArchivedTasks => (
-            app.tasks.iter().filter(|t| t.archived).collect(),
-            &app.state.archived_tasks_state,
-        ),
-    };
-
+pub fn render(
+    frame: &mut Frame,
+    area: Rect,
+    title: String,
+    current_list: &ListState,
+    tasks: Vec<&Task>,
+) {
     let dim_style = Style::default().fg(Color::DarkGray);
 
     let text = if let Some(selected_idx) = current_list.selected() {
-        if let Some(task) = current_task.get(selected_idx) {
+        if let Some(task) = tasks.get(selected_idx) {
             let updated_at = task
                 .updated_at
                 .map(|d| d.with_timezone(&Local).format("%d/%m/%Y %H:%M").to_string())
@@ -40,7 +34,9 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
                 Line::from(Span::styled(
                     format!(
                         "Created_at  : {}",
-                        task.created_at.with_timezone(&Local).format("%d/%m/%Y %H:%M")
+                        task.created_at
+                            .with_timezone(&Local)
+                            .format("%d/%m/%Y %H:%M")
                     ),
                     dim_style,
                 )),
@@ -76,7 +72,7 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
     let main_view = Paragraph::new(text)
         .block(
             Block::new()
-                .title(main_title)
+                .title(title)
                 .borders(Borders::ALL)
                 .border_type(BorderType::Rounded),
         )

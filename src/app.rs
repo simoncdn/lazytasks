@@ -92,6 +92,7 @@ impl App {
         match self.state.active_panel {
             state::PanelState::ActiveTasks => self.active_tasks(),
             state::PanelState::ArchivedTasks => self.archived_tasks(),
+            state::PanelState::About => Vec::new(),
         }
     }
 }

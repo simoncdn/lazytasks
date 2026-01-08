@@ -3,6 +3,7 @@ use std::io::Result;
 mod actions;
 mod app;
 mod components;
+mod constants;
 mod editor;
 mod keybindings;
 mod models;

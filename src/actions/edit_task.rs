@@ -8,7 +8,7 @@ pub fn edit_task(app: &mut App, terminal: &mut DefaultTerminal) {
         let task_id = app
             .state
             .get_selected_panel_state()
-            .selected()
+            .and_then(|s| s.selected())
             .and_then(|idx| app.get_current_tasks().get(idx).map(|t| t.id));
 
         if let Some(task_id) = task_id {

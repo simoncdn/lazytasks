@@ -15,6 +15,7 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
         PanelState::ArchivedTasks => {
             "Unarchive: a | Complete: y | Delete: d | Select: <Space> | Keybindings: ?"
         }
+        PanelState::About => "",
     };
     let bottom_bar = Paragraph::new(help_text).style(Style::default().fg(Color::Blue));
 
