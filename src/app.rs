@@ -9,7 +9,7 @@ use uuid::Uuid;
 use crate::{
     components,
     keybindings::handle_key_event,
-    models::task::Task,
+    models::Task,
     state,
     storage::storage::{self, Storage},
 };
@@ -17,7 +17,7 @@ use crate::{models, state::ModalState};
 
 pub struct App {
     pub exit: bool,
-    pub tasks: Vec<models::task::Task>,
+    pub tasks: Vec<models::Task>,
     pub selected_tasks: Vec<Uuid>,
     pub state: state::AppState,
     pub storage: Storage,
@@ -75,6 +75,12 @@ impl App {
                 selected_option,
             }) => {
                 components::modals::delete_task::render(frame, selected_option);
+            }
+            Some(ModalState::PriorityTask {
+                task_ids: _,
+                selected_option,
+            }) => {
+                components::modals::priority_task::render(frame, selected_option);
             }
             None => {}
         }

@@ -6,7 +6,7 @@ use ratatui::{
     widgets::{Block, BorderType, Borders, List, ListItem},
 };
 
-use crate::{app::App, components::shared, models::task::Task, state::PanelState};
+use crate::{app::App, components::shared, models::Task, state::PanelState};
 
 pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
     let tasks: Vec<&Task> = app.tasks.iter().filter(|t| !t.archived).collect();
@@ -41,7 +41,12 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
                 Style::default()
             };
 
-            ListItem::new(Span::styled(&task.title, text_style)).style(item_style)
+            ListItem::new(Line::from(vec![
+                shared::priority_span::render(task.priority.as_ref()),
+                Span::raw(" "),
+                Span::styled(&task.title, text_style),
+            ]))
+            .style(item_style)
         })
         .collect();
 

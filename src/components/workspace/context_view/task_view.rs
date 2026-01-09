@@ -7,7 +7,7 @@ use ratatui::{
     widgets::{Block, BorderType, Borders, ListState, Paragraph, Wrap},
 };
 
-use crate::models::task::Task;
+use crate::models::{Priority, Task};
 
 pub fn render(
     frame: &mut Frame,
@@ -46,6 +46,16 @@ pub fn render(
                 )),
                 Line::from(Span::styled(
                     format!("Completed   : {}", task.completed),
+                    dim_style,
+                )),
+                Line::from(Span::styled(
+                    format!(
+                        "Priority    : {}",
+                        match &task.priority {
+                            Some(p) => Priority::label(p),
+                            None => "x",
+                        }
+                    ),
                     dim_style,
                 )),
                 Line::from(Span::styled("---", dim_style)),

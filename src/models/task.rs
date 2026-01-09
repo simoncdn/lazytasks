@@ -2,6 +2,8 @@ use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
+use crate::models::Priority;
+
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Task {
     pub id: Uuid,
@@ -11,6 +13,7 @@ pub struct Task {
     pub completed: bool,
     pub archived: bool,
     pub description: String,
+    pub priority: Option<Priority>,
 }
 
 impl Task {
@@ -21,8 +24,9 @@ impl Task {
             created_at: Utc::now(),
             updated_at: None,
             completed: false,
-            description: String::new(),
             archived: false,
+            description: String::new(),
+            priority: None,
         };
     }
 }
