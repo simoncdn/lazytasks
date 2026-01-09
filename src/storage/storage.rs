@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::PathBuf;
 
-use crate::models::task::Task;
+use crate::models::Task;
 
 pub struct Storage {
     path: PathBuf,

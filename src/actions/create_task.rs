@@ -1,7 +1,7 @@
 use crate::{app::App, models};
 
 pub fn create_task(app: &mut App, title: String) {
-    let new_task = models::task::Task::new(title);
+    let new_task = models::Task::new(title);
     app.tasks.push(new_task);
     app.storage.save(&app.tasks);
 

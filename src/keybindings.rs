@@ -77,10 +77,31 @@ pub fn handle_key_event(app: &mut App, event: &Event, terminal: &mut DefaultTerm
                 }
                 _ => {}
             },
+            Some(ModalState::PriorityTask {
+                task_ids,
+                selected_option,
+            }) => match key.code {
+                crossterm::event::KeyCode::Esc => actions::close_modal(app),
+                crossterm::event::KeyCode::Enter => {
+                    let option_idx = selected_option.selected();
+                    let task_ids = task_ids.clone();
+
+                    actions::edit_priority(app, option_idx, task_ids);
+                    actions::close_modal(app);
+                }
+                crossterm::event::KeyCode::Char('j') => {
+                    selected_option.select_next();
+                }
+                crossterm::event::KeyCode::Char('k') => {
+                    selected_option.select_previous();
+                }
+                _ => {}
+            },
             None => match key.code {
                 crossterm::event::KeyCode::Char('a') => actions::open_archive_modal(app),
                 crossterm::event::KeyCode::Char('c') => actions::open_create_modal(app),
                 crossterm::event::KeyCode::Char('e') => actions::open_edit_title_modal(app),
+                crossterm::event::KeyCode::Char('p') => actions::open_priority_modal(app),
                 crossterm::event::KeyCode::Char('E') => actions::edit_task(app, terminal),
                 crossterm::event::KeyCode::Char('y') => actions::toggle_task_completion(app),
                 crossterm::event::KeyCode::Char('q') => actions::quit(app),

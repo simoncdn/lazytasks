@@ -3,7 +3,7 @@ pub mod task_view;
 
 use ratatui::{Frame, layout::Rect};
 
-use crate::{app::App, components::workspace::context_view, models::task::Task, state::PanelState};
+use crate::{app::App, components::workspace::context_view, models::Task, state::PanelState};
 
 pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
     match app.state.active_panel {

@@ -3,7 +3,7 @@ use std::{fs, process::Command};
 use chrono::Local;
 use ratatui::DefaultTerminal;
 
-use crate::models::task::Task;
+use crate::models::{Priority, Task};
 
 const EDIT_FILE: &str = "/tmp/lazytasks_edit.md";
 const DEFAULT_EDITOR: &str = "vim";
@@ -32,6 +32,13 @@ pub fn render_template(task: &Task) -> String {
         .replace("{completed}", &task.completed.to_string())
         .replace("{created_at}", &created_at)
         .replace("{updated_at}", &updated_at)
+        .replace(
+            "{priority}",
+            match &task.priority {
+                Some(p) => Priority::label(p),
+                None => "No priority",
+            },
+        )
 }
 
 pub fn parse_content(content: &str) -> TaskUpdate {

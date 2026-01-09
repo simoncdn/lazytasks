@@ -41,6 +41,10 @@ pub enum ModalState {
         task_ids: Vec<Uuid>,
         selected_option: ListState,
     },
+    PriorityTask {
+        task_ids: Vec<Uuid>,
+        selected_option: ListState,
+    },
 }
 
 impl AppState {
@@ -120,6 +124,15 @@ impl AppState {
         let mut option_list_state = ListState::default();
         option_list_state.select(Some(0));
         self.active_modal = Some(ModalState::DeleteTask {
+            task_ids,
+            selected_option: option_list_state,
+        })
+    }
+
+    pub fn open_priority_task(&mut self, task_ids: Vec<Uuid>) {
+        let mut option_list_state = ListState::default();
+        option_list_state.select(Some(0));
+        self.active_modal = Some(ModalState::PriorityTask {
             task_ids,
             selected_option: option_list_state,
         })

@@ -15,7 +15,7 @@
 # Completed : {completed}
 # Created   : {created_at}
 # Updated   : {updated_at}
-
+# Priority  : {priority}
 
 # ====================
 # EDITABLE
