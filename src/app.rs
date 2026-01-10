@@ -87,11 +87,20 @@ impl App {
     }
 
     pub fn active_tasks(&self) -> Vec<&Task> {
-        self.tasks.iter().filter(|task| !task.archived).collect()
+        let mut tasks: Vec<&Task> = self.tasks.iter().filter(|task| !task.archived).collect();
+        tasks.sort_by(|a, b| match (&a.priority, &b.priority) {
+            (Some(pa), Some(pb)) => pa.cmp(pb),
+            (Some(_), None) => std::cmp::Ordering::Less,
+            (None, Some(_)) => std::cmp::Ordering::Greater,
+            (None, None) => a.created_at.cmp(&b.created_at),
+        });
+        tasks
     }
 
     pub fn archived_tasks(&self) -> Vec<&Task> {
-        self.tasks.iter().filter(|task| task.archived).collect()
+        let mut tasks: Vec<&Task> = self.tasks.iter().filter(|task| task.archived).collect();
+        tasks.sort_by(|a, b| b.archived_at.cmp(&a.archived_at));
+        tasks
     }
 
     pub fn get_current_tasks(&self) -> Vec<&Task> {

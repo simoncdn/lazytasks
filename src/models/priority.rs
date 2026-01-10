@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::models;
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Priority {
     High,
     Medium,

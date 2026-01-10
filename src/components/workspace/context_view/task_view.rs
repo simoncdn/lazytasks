@@ -24,6 +24,10 @@ pub fn render(
                 .updated_at
                 .map(|d| d.with_timezone(&Local).format("%d/%m/%Y %H:%M").to_string())
                 .unwrap_or_else(|| "-".to_string());
+            let archived_at = task
+                .archived_at
+                .map(|d| d.with_timezone(&Local).format("%d/%m/%Y %H:%M").to_string())
+                .unwrap_or_else(|| "-".to_string());
 
             let mut lines = vec![
                 Line::from(Span::styled("---", dim_style)),
@@ -42,6 +46,10 @@ pub fn render(
                 )),
                 Line::from(Span::styled(
                     format!("Updated_at  : {}", updated_at),
+                    dim_style,
+                )),
+                Line::from(Span::styled(
+                    format!("Archived_at : {}", archived_at),
                     dim_style,
                 )),
                 Line::from(Span::styled(
