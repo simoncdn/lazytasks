@@ -3,7 +3,11 @@ use crate::{app::App, db::repositories::TaskRepository, models};
 pub fn create_task(app: &mut App, title: String) {
     let new_task = models::Task::new(title);
 
-    TaskRepository::create(&app.db.connection, &new_task);
+    if let Err(e) = TaskRepository::create(&app.db.connection, &new_task) {
+        app.error = Some(e.to_string());
+
+        return;
+    };
     app.tasks.push(new_task);
 
     let new_index = app.active_tasks().len() - 1;

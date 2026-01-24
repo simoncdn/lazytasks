@@ -21,13 +21,18 @@ pub struct App {
     pub selected_tasks: Vec<Uuid>,
     pub state: state::AppState,
     pub db: Db,
+    pub error: Option<String>,
 }
 
 impl App {
     pub fn new() -> Self {
         let state = state::AppState::new();
         let db = Db::new();
-        let tasks = TaskRepository::get_all_tasks(&db.connection);
+
+        let (tasks, error) = match TaskRepository::get_all(&db.connection) {
+            Ok(tasks) => (tasks, None),
+            Err(err) => (vec![], Some(err.to_string())),
+        };
 
         App {
             exit: false,
@@ -35,6 +40,7 @@ impl App {
             state,
             db,
             tasks,
+            error,
         }
     }
 

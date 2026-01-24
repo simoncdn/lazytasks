@@ -14,7 +14,10 @@ pub fn toggle_task_completion(app: &mut App) {
                 task.completed = !task.completed;
                 task.updated_at = Some(Utc::now());
 
-                TaskRepository::update(&app.db.connection, task);
+                if let Err(e) = TaskRepository::update(&app.db.connection, task) {
+                    app.error = Some(e.to_string());
+                    return;
+                };
             }
         }
     } else {
@@ -23,7 +26,10 @@ pub fn toggle_task_completion(app: &mut App) {
                 task.completed = !task.completed;
                 task.updated_at = Some(Utc::now());
 
-                TaskRepository::update(&app.db.connection, task);
+                if let Err(e) = TaskRepository::update(&app.db.connection, task) {
+                    app.error = Some(e.to_string());
+                    return;
+                };
             }
         });
         app.selected_tasks.clear();

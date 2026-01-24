@@ -1,5 +1,4 @@
 use chrono::{DateTime, Utc};
-use rusqlite::Row;
 use uuid::Uuid;
 
 use crate::models::Priority;
@@ -19,7 +18,7 @@ pub struct Task {
 
 impl Task {
     pub fn new(title: impl Into<String>) -> Self {
-        return Task {
+        Task {
             id: Uuid::new_v4(),
             title: title.into(),
             description: None,
@@ -29,7 +28,7 @@ impl Task {
             created_at: Utc::now(),
             updated_at: None,
             archived_at: None,
-        };
+        }
     }
 
     pub fn get_active_tasks(tasks: &[Task]) -> Vec<Task> {
@@ -55,35 +54,5 @@ impl Task {
 
     pub fn sort_by_archived_date(tasks: &mut Vec<Task>) {
         tasks.sort_by(|a, b| b.archived_at.cmp(&a.archived_at));
-    }
-
-    pub fn from_row(row: &Row) -> rusqlite::Result<Self> {
-        let id: String = row.get("id")?;
-        let priority: Option<String> = row.get("priority")?;
-        let created_at: String = row.get("created_at")?;
-        let updated_at: Option<String> = row.get("updated_at")?;
-        let archived_at: Option<String> = row.get("archived_at")?;
-
-        Ok(Task {
-            id: Uuid::parse_str(&id).unwrap(),
-            title: row.get("title")?,
-            description: row.get("description")?,
-            completed: row.get::<_, i32>("completed")? != 0,
-            archived: row.get::<_, i32>("archived")? != 0,
-            priority: priority.and_then(|p| Priority::from_str(&p)),
-            created_at: DateTime::parse_from_rfc3339(&created_at)
-                .unwrap()
-                .with_timezone(&Utc),
-            updated_at: updated_at.map(|s| {
-                DateTime::parse_from_rfc3339(&s)
-                    .unwrap()
-                    .with_timezone(&Utc)
-            }),
-            archived_at: archived_at.map(|s| {
-                DateTime::parse_from_rfc3339(&s)
-                    .unwrap()
-                    .with_timezone(&Utc)
-            }),
-        })
     }
 }

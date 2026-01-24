@@ -17,7 +17,11 @@ pub fn edit_priority(app: &mut App, option_idx: Option<usize>, task_ids: Vec<Uui
             task.priority = priority.clone();
             task.updated_at = Some(Utc::now());
 
-            TaskRepository::update(&app.db.connection, task);
+            if let Err(e) = TaskRepository::update(&app.db.connection, task) {
+                app.error = Some(e.to_string());
+
+                return;
+            };
         }
     });
 

@@ -14,7 +14,11 @@ pub fn toggle_archive_task(app: &mut App, option_idx: Option<usize>, task_ids: V
                     None
                 };
 
-                TaskRepository::update(&app.db.connection, task);
+                if let Err(e) = TaskRepository::update(&app.db.connection, task) {
+                    app.error = Some(e.to_string());
+
+                    return;
+                };
             }
         });
 
@@ -25,12 +29,10 @@ pub fn toggle_archive_task(app: &mut App, option_idx: Option<usize>, task_ids: V
             .state
             .get_selected_panel_state()
             .and_then(|s| s.selected())
+            && idx >= count
+            && let Some(panel_state) = app.state.get_selected_panel_state()
         {
-            if idx >= count {
-                if let Some(panel_state) = app.state.get_selected_panel_state() {
-                    panel_state.select(count.checked_sub(1));
-                }
-            }
+            panel_state.select(count.checked_sub(1));
         }
     }
 }
