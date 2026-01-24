@@ -5,7 +5,7 @@ use crate::{app::App, db::repositories::TaskRepository};
 
 pub fn toggle_archive_task(app: &mut App, option_idx: Option<usize>, task_ids: Vec<Uuid>) {
     if option_idx == Some(0) {
-        app.tasks.iter_mut().for_each(|task| {
+        for task in app.tasks.iter_mut() {
             if task_ids.contains(&task.id) {
                 task.archived = !task.archived;
                 task.archived_at = if task.archived {
@@ -20,7 +20,7 @@ pub fn toggle_archive_task(app: &mut App, option_idx: Option<usize>, task_ids: V
                     return;
                 };
             }
-        });
+        }
 
         app.selected_tasks.clear();
 

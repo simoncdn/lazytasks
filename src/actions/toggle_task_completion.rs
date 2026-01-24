@@ -21,7 +21,7 @@ pub fn toggle_task_completion(app: &mut App) {
             }
         }
     } else {
-        app.tasks.iter_mut().for_each(|task| {
+        for task in app.tasks.iter_mut() {
             if app.selected_tasks.contains(&task.id) {
                 task.completed = !task.completed;
                 task.updated_at = Some(Utc::now());
@@ -31,7 +31,7 @@ pub fn toggle_task_completion(app: &mut App) {
                     return;
                 };
             }
-        });
+        }
         app.selected_tasks.clear();
     }
 }
