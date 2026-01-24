@@ -9,11 +9,11 @@ pub struct Db {
 impl Db {
     pub fn new() -> Self {
         let data_dir = dirs::data_dir()
-            .expect("Couldn't find your data repository")
+            .expect("Couldn't find your data directory")
             .join("lazytasks");
 
         if !data_dir.exists() {
-            fs::create_dir(&data_dir).expect("Couldn't create your data repository")
+            fs::create_dir(&data_dir).expect("Couldn't create your data directory")
         }
 
         let db_path = data_dir.join("tasks.db");
