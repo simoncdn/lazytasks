@@ -74,7 +74,7 @@ impl App {
         components::bottom_bar::render(frame, layout[1], self);
 
         match &mut self.state.active_modal {
-            Some(ModalState::CreateTask { input }) => {
+            Some(ModalState::CreateTask { input, space_id: _ }) => {
                 components::modals::create_task::render(frame, input);
             }
             Some(ModalState::EditTask { task_id: _, input }) => {
@@ -101,6 +101,12 @@ impl App {
             }
             Some(ModalState::CreateSpace { input }) => {
                 components::modals::create_task::render(frame, input);
+            }
+            Some(ModalState::DeleteSpace {
+                space_id: _,
+                selected_option,
+            }) => {
+                components::modals::delete_space::render(frame, selected_option);
             }
             None => {}
         }

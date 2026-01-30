@@ -1,5 +1,6 @@
 use ratatui::widgets::ListState;
 use tui_input::Input;
+use tui_tree_widget::TreeState;
 use uuid::Uuid;
 
 /// The application global state
@@ -12,6 +13,9 @@ pub struct AppState {
 
     /// State of the focus pane
     pub active_panel: PanelState,
+
+    /// State of the spaces tree (identifier = UUID as String)
+    pub spaces_tree_state: TreeState<String>,
 
     /// State of the current active modal (CreateTask, EditTask, ArchivedTask, DeleteTask)
     pub active_modal: Option<ModalState>,
@@ -27,6 +31,7 @@ pub enum PanelState {
 pub enum ModalState {
     CreateTask {
         input: Input,
+        space_id: String,
     },
     EditTask {
         task_id: Uuid,
@@ -48,6 +53,10 @@ pub enum ModalState {
     CreateSpace {
         input: Input,
     },
+    DeleteSpace {
+        space_id: Uuid,
+        selected_option: ListState,
+    },
 }
 
 impl AppState {
@@ -58,11 +67,15 @@ impl AppState {
         let mut archived_tasks_state = ListState::default();
         archived_tasks_state.select(Some(0));
 
+        let mut spaces_tree_state = TreeState::default();
+        spaces_tree_state.select_first();
+
         AppState {
             active_tasks_state,
             archived_tasks_state,
             active_panel: PanelState::ActiveTasks,
             active_modal: None,
+            spaces_tree_state,
         }
     }
 
@@ -100,9 +113,10 @@ impl AppState {
         }
     }
 
-    pub fn open_create_task(&mut self) {
+    pub fn open_create_task(&mut self, space_id: String) {
         self.active_modal = Some(ModalState::CreateTask {
             input: Input::default(),
+            space_id,
         })
     }
 
@@ -157,5 +171,14 @@ impl AppState {
 
     pub fn close_modal(&mut self) {
         self.active_modal = None
+    }
+
+    pub fn open_delete_space(&mut self, space_id: Uuid) {
+        let mut option_list_state = ListState::default();
+        option_list_state.select(Some(0));
+        self.active_modal = Some(ModalState::DeleteSpace {
+            space_id,
+            selected_option: option_list_state,
+        })
     }
 }

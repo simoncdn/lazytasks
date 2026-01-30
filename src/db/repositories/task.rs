@@ -10,12 +10,18 @@ pub struct TaskRepository;
 
 impl TaskRepository {
     pub fn create(connection: &Connection, task: &Task) -> Result<(), rusqlite::Error> {
+        let space_id = match &task.space_id {
+            Some(v) => Some(Uuid::to_string(v)),
+            None => None,
+        };
+
         connection.execute(
-            "INSERT INTO tasks (id, title, created_at) VALUES (?1, ?2, ?3) ",
+            "INSERT INTO tasks (id, title, created_at, space_id) VALUES (?1, ?2, ?3, ?4) ",
             (
                 task.id.to_string(),
                 &task.title,
                 task.created_at.to_rfc3339(),
+                space_id,
             ),
         )?;
 

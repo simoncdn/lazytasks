@@ -18,7 +18,7 @@ pub struct Task {
 }
 
 impl Task {
-    pub fn new(title: impl Into<String>) -> Self {
+    pub fn new(title: impl Into<String>, space_id: String) -> Self {
         Task {
             id: Uuid::new_v4(),
             title: title.into(),
@@ -29,7 +29,7 @@ impl Task {
             created_at: Utc::now(),
             updated_at: None,
             archived_at: None,
-            space_id: None,
+            space_id: Some(Uuid::parse_str(&space_id).unwrap()),
         }
     }
 

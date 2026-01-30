@@ -53,4 +53,18 @@ impl SpaceRepository {
                 .transpose()?,
         })
     }
+
+    pub fn delete(connection: &Connection, space_id: &Uuid) -> Result<(), rusqlite::Error> {
+        let tx = connection.unchecked_transaction()?;
+
+        tx.execute(
+            "DELETE FROM tasks WHERE space_id = ?1",
+            [space_id.to_string()],
+        )?;
+        tx.execute("DELETE FROM spaces WHERE id = ?1", [space_id.to_string()])?;
+
+        tx.commit()?;
+
+        Ok(())
+    }
 }

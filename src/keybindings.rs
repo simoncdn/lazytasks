@@ -2,20 +2,23 @@ use ratatui::crossterm::{self, event::Event};
 
 use ratatui::DefaultTerminal;
 use tui_input::backend::crossterm::EventHandler;
+use tui_tree_widget::TreeState;
 
 use crate::actions;
+use crate::state::PanelState;
 use crate::{app::App, state::ModalState};
 
 pub fn handle_key_event(app: &mut App, event: &Event, terminal: &mut DefaultTerminal) {
     if let crossterm::event::Event::Key(key) = event {
         match &mut app.state.active_modal {
-            Some(ModalState::CreateTask { input }) => match key.code {
+            Some(ModalState::CreateTask { input, space_id }) => match key.code {
                 crossterm::event::KeyCode::Esc => actions::close_modal(app),
                 crossterm::event::KeyCode::Enter => {
                     let title = input.value().trim().to_owned();
+                    let space_id = space_id.clone();
 
                     if !title.is_empty() {
-                        actions::create_task(app, title);
+                        actions::create_task(app, title, space_id);
                     }
                     actions::close_modal(app);
                 }
@@ -111,6 +114,26 @@ pub fn handle_key_event(app: &mut App, event: &Event, terminal: &mut DefaultTerm
                     input.handle_event(event);
                 }
             },
+            Some(ModalState::DeleteSpace {
+                space_id,
+                selected_option,
+            }) => match key.code {
+                crossterm::event::KeyCode::Esc => actions::close_modal(app),
+                crossterm::event::KeyCode::Enter => {
+                    let option_idx = selected_option.selected();
+                    let space_id = *space_id;
+
+                    actions::delete_space(app, option_idx, space_id);
+                    actions::close_modal(app);
+                }
+                crossterm::event::KeyCode::Char('j') => {
+                    selected_option.select_next();
+                }
+                crossterm::event::KeyCode::Char('k') => {
+                    selected_option.select_previous();
+                }
+                _ => {}
+            },
             None => match key.code {
                 crossterm::event::KeyCode::Char('a') => actions::open_archive_modal(app),
                 crossterm::event::KeyCode::Char('c') => actions::open_create_task_modal(app),
@@ -120,12 +143,43 @@ pub fn handle_key_event(app: &mut App, event: &Event, terminal: &mut DefaultTerm
                 crossterm::event::KeyCode::Char('E') => actions::edit_task(app, terminal),
                 crossterm::event::KeyCode::Char('y') => actions::toggle_task_completion(app),
                 crossterm::event::KeyCode::Char('q') => actions::quit(app),
-                crossterm::event::KeyCode::Char('d') => actions::open_delete_modal(app),
-                crossterm::event::KeyCode::Char('j') => actions::select_next_task(app),
-                crossterm::event::KeyCode::Char('k') => actions::select_previous_task(app),
+                crossterm::event::KeyCode::Char('d') => {
+                    if app.state.active_panel == PanelState::ActiveTasks {
+                        actions::open_delete_space_modal(app);
+                    }
+                    if app.state.active_modal.is_none() {
+                        actions::open_delete_modal(app);
+                    }
+                }
+                crossterm::event::KeyCode::Char('j') => {
+                    match app.state.active_panel {
+                        PanelState::ActiveTasks => {
+                            TreeState::key_down(&mut app.state.spaces_tree_state);
+                        }
+                        _ => actions::select_next_task(app),
+                    };
+                }
+                crossterm::event::KeyCode::Char('k') => {
+                    match app.state.active_panel {
+                        PanelState::ActiveTasks => {
+                            TreeState::key_up(&mut app.state.spaces_tree_state);
+                        }
+                        _ => actions::select_previous_task(app),
+                    };
+                }
                 crossterm::event::KeyCode::Char(' ') => actions::toggle_task_selection(app),
                 crossterm::event::KeyCode::Tab => actions::switch_panel(app),
-                crossterm::event::KeyCode::Enter => actions::clean_err_msg(app),
+                crossterm::event::KeyCode::Enter => match app.state.active_panel {
+                    PanelState::ActiveTasks => {
+                        if app.error.is_some() {
+                            actions::clean_err_msg(app);
+                        } else {
+                            let selected = app.state.spaces_tree_state.selected().to_vec();
+                            TreeState::toggle(&mut app.state.spaces_tree_state, selected);
+                        }
+                    }
+                    _ => actions::clean_err_msg(app),
+                },
                 _ => {}
             },
         }
