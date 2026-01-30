@@ -57,6 +57,11 @@ pub enum ModalState {
         space_id: Uuid,
         selected_option: ListState,
     },
+    ArchiveSpace {
+        space_id: Uuid,
+        selected_option: ListState,
+        is_archived: bool,
+    },
 }
 
 impl AppState {
@@ -179,6 +184,16 @@ impl AppState {
         self.active_modal = Some(ModalState::DeleteSpace {
             space_id,
             selected_option: option_list_state,
+        })
+    }
+
+    pub fn open_archive_space(&mut self, space_id: Uuid, is_archived: bool) {
+        let mut option_list_state = ListState::default();
+        option_list_state.select(Some(0));
+        self.active_modal = Some(ModalState::ArchiveSpace {
+            space_id,
+            selected_option: option_list_state,
+            is_archived,
         })
     }
 }

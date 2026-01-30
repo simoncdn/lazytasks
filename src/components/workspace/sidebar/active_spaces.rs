@@ -19,7 +19,7 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
         Color::White
     };
 
-    for space in &app.spaces {
+    for space in app.spaces.iter().filter(|s| !s.archived) {
         let space_tasks: Vec<TreeItem<String>> = app
             .tasks
             .iter()

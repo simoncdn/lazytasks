@@ -1,3 +1,4 @@
+pub mod archive_space;
 pub mod clean_err_msg;
 pub mod close_modal;
 pub mod create_space;
@@ -8,6 +9,7 @@ pub mod edit_priority;
 pub mod edit_task;
 pub mod edit_title;
 pub mod open_archive_modal;
+pub mod open_archive_space_modal;
 pub mod open_create_space_modal;
 pub mod open_create_task_modal;
 pub mod open_delete_modal;
@@ -22,6 +24,7 @@ pub mod toggle_archive_task;
 pub mod toggle_task_completion;
 pub mod toggle_task_selection;
 
+pub use archive_space::archive_space;
 pub use clean_err_msg::clean_err_msg;
 pub use close_modal::close_modal;
 pub use create_space::create_space;
@@ -32,6 +35,7 @@ pub use edit_priority::edit_priority;
 pub use edit_task::edit_task;
 pub use edit_title::edit_title;
 pub use open_archive_modal::open_archive_modal;
+pub use open_archive_space_modal::open_archive_space_modal;
 pub use open_create_space_modal::open_create_space_modal;
 pub use open_create_task_modal::open_create_task_modal;
 pub use open_delete_modal::open_delete_modal;

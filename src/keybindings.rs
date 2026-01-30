@@ -134,8 +134,36 @@ pub fn handle_key_event(app: &mut App, event: &Event, terminal: &mut DefaultTerm
                 }
                 _ => {}
             },
+            Some(ModalState::ArchiveSpace {
+                space_id,
+                selected_option,
+                is_archived: _,
+            }) => match key.code {
+                crossterm::event::KeyCode::Esc => actions::close_modal(app),
+                crossterm::event::KeyCode::Enter => {
+                    let option_idx = selected_option.selected();
+                    let space_id = *space_id;
+
+                    actions::archive_space(app, option_idx, space_id);
+                    actions::close_modal(app);
+                }
+                crossterm::event::KeyCode::Char('j') => {
+                    selected_option.select_next();
+                }
+                crossterm::event::KeyCode::Char('k') => {
+                    selected_option.select_previous();
+                }
+                _ => {}
+            },
             None => match key.code {
-                crossterm::event::KeyCode::Char('a') => actions::open_archive_modal(app),
+                crossterm::event::KeyCode::Char('a') => {
+                    if app.state.active_panel == PanelState::ActiveTasks {
+                        actions::open_archive_space_modal(app);
+                    }
+                    if app.state.active_modal.is_none() {
+                        actions::open_archive_modal(app);
+                    }
+                }
                 crossterm::event::KeyCode::Char('c') => actions::open_create_task_modal(app),
                 crossterm::event::KeyCode::Char('s') => actions::open_create_space_modal(app),
                 crossterm::event::KeyCode::Char('e') => actions::open_edit_title_modal(app),

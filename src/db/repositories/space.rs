@@ -54,6 +54,26 @@ impl SpaceRepository {
         })
     }
 
+    pub fn update(connection: &Connection, space: &Space) -> Result<(), rusqlite::Error> {
+        connection.execute(
+            "UPDATE spaces SET
+                title = ?2,
+                archived = ?3,
+                updated_at = ?4,
+                archived_at = ?5
+            WHERE id = ?1",
+            (
+                space.id.to_string(),
+                &space.title,
+                space.archived as u32,
+                space.updated_at.map(|d| d.to_rfc3339()),
+                space.archived_at.map(|d| d.to_rfc3339()),
+            ),
+        )?;
+
+        Ok(())
+    }
+
     pub fn delete(connection: &Connection, space_id: &Uuid) -> Result<(), rusqlite::Error> {
         let tx = connection.unchecked_transaction()?;
 

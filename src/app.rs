@@ -108,6 +108,13 @@ impl App {
             }) => {
                 components::modals::delete_space::render(frame, selected_option);
             }
+            Some(ModalState::ArchiveSpace {
+                space_id: _,
+                selected_option,
+                is_archived,
+            }) => {
+                components::modals::archive_space::render(frame, selected_option, *is_archived);
+            }
             None => {}
         }
     }
