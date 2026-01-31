@@ -33,11 +33,15 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
             .iter()
             .map(|task| {
                 let is_selected = app.selected_tasks.contains(&task.id);
-                let title_style = if is_selected {
+                let mut title_style = if is_selected {
                     Style::default().fg(Color::LightGreen)
                 } else {
                     Style::default()
                 };
+
+                if task.completed {
+                    title_style = title_style.add_modifier(Modifier::CROSSED_OUT);
+                }
 
                 let line = match &task.priority {
                     Some(p) => Line::from(vec![
@@ -78,11 +82,15 @@ pub fn render(frame: &mut Frame, area: Rect, app: &mut App) {
 
     for task in &orphan_tasks {
         let is_selected = app.selected_tasks.contains(&task.id);
-        let title_style = if is_selected {
+        let mut title_style = if is_selected {
             Style::default().fg(Color::LightGreen)
         } else {
             Style::default()
         };
+
+        if task.completed {
+            title_style = title_style.add_modifier(Modifier::CROSSED_OUT);
+        }
 
         let line = match &task.priority {
             Some(p) => Line::from(vec![
